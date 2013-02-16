@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		<style>
+			.one {width:100%;height:3000px;}
+			#backtotop {background:url(./rocket_up.png) 0px 0px no-repeat;position:fixed;bottom:0px;right:10px;width:149px;height:260px;cursor: pointer;}
+		</style>
+	</head>
+	<body>
+		<div class="one"></div>
+		<div id="backtotop" style="display:none;"></div>
+	</body>
+	<script>
+var scrollTT = {
+	tTSpeed			:	800, // 滚动到顶部的时间
+	startFlyTime	:	1000, // 火箭起飞的时间
+	restartTime		:	1200, // 重置火箭位置的时间
+	flySpeed		:	50, // 火箭向上飞行的速度
+	obj			:	$("#backtotop"), // 回到顶部的dom
+	flyTemp			: '', // 一个setInterval的临时变量
+	/**
+	* 
+	* 初始化 scrollTT 函数
+	* 主要是像对象添加事件
+	*
+	*/
+	init			: function( obj, tTSpeed, startFlyTime, restartTime, flySpeed ) {
+		scrollTT.tTSpeed		= scrollTT.tTSpeed || tTSpeed;
+		scrollTT.startFlyTIme	= scrollTT.startFlyTIme || startFlyTime;
+		scrollTT.restartTime	= scrollTT.restartTime || restartTime;
+		scrollTT.flySpeed		= scrollTT.flySpeed || flySpeed;
+		scrollTT.obj			= scrollTT.obj || obj;
+		
+		// 向window 绑定scroll 事件
+		scrollTT.onScroll();
+
+		
+		scrollTT.obj.click(function(){
+			// 关闭默认的scroll事件
+			$(window).off("scroll");
+			// 页面向上滚动
+			$('html,body').animate({scrollTop: '0px'}, this.tTSpeed);
+			// 火箭向上飞行
+			scrollTT.objFly();
+			// 火箭的喷气效果
+			scrollTT.blow();
+			
+		});
+
+		// 鼠标在火箭上的效果
+		scrollTT.obj.mouseenter(function() {
+			$(this).css('background-position', '-149px 0px');
+		});
+		// 鼠标移开的效果
+		scrollTT.obj.mouseleave(function() {
+			$(this).css('background-position', '0px 0px');
+		});
+		
+	},	
+	/*
+	* 向window 绑定scroll 事件
+	*
+	*/
+	onScroll : function() {
+		$(window).on('scroll', function() {
+			if ($(window).scrollTop()>500){
+				scrollTT.obj.fadeIn(500);
+			}else{
+				scrollTT.obj.fadeOut(1500);
+			}
+		});
+	},
+	/**
+	* dom对象向上飞行
+	*
+	*/
+	objFly : function() {
+		var fly = setTimeout(function(){
+			scrollTT.obj.animate({top: '-500px'} ,'normal', 'linear');
+			scrollTT.resetFly();
+			clearTimeout(fly);
+			clearInterval(scrollTT.flyTemp);
+		}, scrollTT.startFlyTime);
+	},
+	/**
+	* dom 对象飞行完毕回到原来的位置
+	*
+	*/
+	resetFly : function() {
+			var fly2 = setTimeout(function() {
+				scrollTT.obj.hide();
+				scrollTT.obj.css("top", 'auto');
+				scrollTT.obj.css("background-position", '0px 0px');
+				scrollTT.onScroll();
+				clearTimeout(fly2);
+			},scrollTT.restartTime);
+		},
+	/**
+	* dom 对象的喷气效果
+	*
+	*/
+	blow : function() {
+		var topPosiiton = -149;
+		scrollTT.flyTemp = setInterval(function() {
+			topPosiiton += -149;
+			if(topPosiiton < -743) {
+				topPosiiton = -149
+			}
+			scrollTT.obj.css('background-position', topPosiiton + 'px 0px');
+		}, this.flySpeed);
+	}
+};
+
+scrollTT.init();
+	
+	</script>
+</html>
