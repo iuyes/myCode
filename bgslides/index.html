@@ -1,0 +1,172 @@
+<script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+<style>
+	.content-top {width: auto;min-width: 950px;height:380px;}
+	.headerimg { width:100%;height:380px;background-position: center top;background-repeat: no-repeat; position:absolute; }
+	#headerimg1 { background-image:url("./nature.jpg"); float:left; display:block;}
+	#headerimg2 { background-image:url("./work.jpg");float:left;display:block; clear:both;}
+	#headernav-outer {height:30px;width:200px;position: relative;	z-index: 1;left:34%;top:85%;}
+	#headernav{height: 100%;}
+	.btn { height:28px;width:28px; float:left; cursor:pointer;}
+	#prev { background:url(./icon.png) 0px 0px  no-repeat;}
+	#next { background:url(./icon.png) -28px 0px  no-repeat;}
+	#control {width:20px;margin:5px 5px 0px 0px;height:16px;background:url(./icon.png) -55px -0px no-repeat;}
+	#control:hover {background:url(./icon.png) -55px -19px no-repeat;}
+</style>
+<!-- jQuery句柄，用于放置头部背景图片 -->
+<div class="content-top">
+	<div id="headerimg1" class="headerimg"></div>
+	<div id="headerimg2" class="headerimg"></div>
+
+	
+	<!-- 幻灯片控制器 -->
+	<div id="headernav-outer">
+		<div id="headernav">
+			<div id="prev" class="btn"></div>
+			<div id="next" class="btn"></div>
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript" charset="utf-8">
+/*
+ * @ author andy (andyliu.me)
+ *
+ */
+	var slides = {
+		// 背景图片地址
+		urls : [
+			'./biking.jpg',
+			'./food.jpg',
+			'./nature.jpg',
+			'./vacation.jpg'
+		],
+
+		// 默认配置
+		conf : {
+			'animating'			: false, // 动画是否在运行
+			'currentImg'		: 0, // 当前图片id
+			'direction'			: 'next', // 图片播放顺序
+			'currentZindex'		: -1, // 当前图片的z-index
+			'activeContainer'	: 1, // 需要显示的div
+			'slideshowSpeed'	: 6000, // 播放速度
+			'interval'			: '', // setInterval产生的id
+			'htmlBgIdPrefix'	: 'headerimg', // 背景div的class
+			'controlId'			: 'control', // 控制器中间直接显示某个背景的div 的id
+			'prevId'			: '#prev', // 上一个按钮的id
+			'nextId'			: '#next', // 下一个按钮的id
+		},
+
+		// 开始播放背景幻灯片
+		start : function() {
+			for(var i = 0;i<slides.urls.length;i++) {
+				$("<div id=\""+slides.conf.controlId+"\" class=\"btn\" data=\""+i+"\"></div>").insertBefore($("#next"));
+			}
+
+			$("div#"+slides.conf.controlId+"").bind('click',function(){
+				slides.stopAnimation();
+				slides.control($(this).attr('data'));
+			});
+
+			slides.init();
+			slides.startAnimation();
+		},
+
+		// 初始化添加上一个下一个按钮事件以
+		init : function() {
+			$(slides.conf.prevId).click(function() {
+				slides.stopAnimation();
+				slides.prev();
+			});
+			$(slides.conf.nextId).click(function() {
+				slides.stopAnimation();
+				slides.next();
+			});
+		},
+
+		// 上一张幻灯片
+		prev : function() {
+			slides.control("prev");
+		},
+
+		// 下一张幻灯片
+		next : function() {
+			slides.control("next");
+		},
+
+		// 显示当前选择的幻灯片
+		current : function(num) {
+			slides.control(num);
+		},
+
+		// 幻灯片显示控制器
+		control : function(direction) {
+			// 选择要显示的图片
+			if(direction == "next") {
+				slides.conf.currentImg++;
+				slides.conf.currentImg = slides.searchImg( slides.conf.currentImg , slides.urls.length );
+			}else if(direction == 'prev') {
+				slides.conf.currentImg--;
+				slides.conf.currentImg = slides.searchImg( slides.conf.currentImg , slides.urls.length);
+			}else {
+				slides.conf.currentImg = direction;
+			}
+			
+			// Check which container we need to use
+			var currentContainer = slides.conf.activeContainer;
+			if(slides.conf.activeContainer == 1) {
+				slides.conf.activeContainer = 2;
+			} else {
+				slides.conf.activeContainer = 1;
+			}
+			slides.showImage(slides.urls[slides.conf.currentImg], currentContainer, slides.conf.activeContainer);
+		
+		},
+
+		// 背景图显示
+		showImage : function(photoObject, currentContainer, activeContainer) {
+			slides.conf.animating = true;
+		
+			// 使容器的显示层级总是最低的
+			slides.conf.currentZindex--;
+			
+			// 替换需要展示的容器图片
+			$("#" + slides.conf.htmlBgIdPrefix + slides.conf.activeContainer).css({
+				"background-image" : "url(" + photoObject + ")",
+				"display" : "block",
+				"z-index" : slides.conf.currentZindex
+			});
+			
+			// 使上一个显示图片的容器慢慢消失
+			$("#" + slides.conf.htmlBgIdPrefix + currentContainer).fadeOut();
+		},
+
+		// 搜索应该显示的北京图片
+		searchImg : function( current , total ) {
+			if(current == total) {
+				current = 0;
+			}else if(current == -1) {
+				current = total-1;
+			}
+			
+			return current;			
+		},
+
+		// 停止动画
+		stopAnimation : function() {
+			// Clear the interval
+			clearInterval(slides.conf.interval);
+			slides.conf.animating = false;
+		},
+
+		// 开始动画
+		startAnimation : function() {
+			slides.conf.animating = true;
+			slides.conf.interval = setInterval(function() {
+				slides.control("next");
+			}, slides.conf.slideshowSpeed);		   
+				   
+		}
+	}
+slides.start();
+
+</script>
