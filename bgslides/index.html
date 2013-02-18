@@ -1,3 +1,5 @@
+<html>
+	<head>
 <script type="text/javascript" charset="utf-8" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 <style>
 	.content-top {width: auto;min-width: 950px;height:380px;}
@@ -9,9 +11,11 @@
 	.btn { height:28px;width:28px; float:left; cursor:pointer;}
 	#prev { background:url(./icon.png) 0px 0px  no-repeat;}
 	#next { background:url(./icon.png) -28px 0px  no-repeat;}
-	#control {width:20px;margin:5px 5px 0px 0px;height:16px;background:url(./icon.png) -55px -0px no-repeat;}
-	#control:hover {background:url(./icon.png) -55px -19px no-repeat;}
+	.control {width:20px;margin:5px 5px 0px 0px;height:16px;background:url(./icon.png) -55px -0px no-repeat;}
+	.control:hover {background:url(./icon.png) -55px -19px no-repeat;}
 </style>
+</head>
+<body>
 <!-- jQuery句柄，用于放置头部背景图片 -->
 <div class="content-top">
 	<div id="headerimg1" class="headerimg"></div>
@@ -25,7 +29,6 @@
 			<div id="next" class="btn"></div>
 		</div>
 	</div>
-
 </div>
 <script type="text/javascript" charset="utf-8">
 /*
@@ -51,9 +54,9 @@
 			'slideshowSpeed'	: 6000, // 播放速度
 			'interval'			: '', // setInterval产生的id
 			'htmlBgIdPrefix'	: 'headerimg', // 背景div的class
-			'controlId'			: 'control', // 控制器中间直接显示某个背景的div 的id
+			'controlClass'			: 'control', // 控制器中间直接显示某个背景的div 的class
 			'prevId'			: 'prev', // 上一个按钮的id
-			'nextId'			: 'next', // 下一个按钮的id
+			'nextId'			: 'next' // 下一个按钮的id
 		},
 
 		// 开始播放背景幻灯片
@@ -64,19 +67,14 @@
 				}else {
 					var style = '';
 				}
-				$("<div style=\""+ style +"\" id=\""+slides.conf.controlId+"\" class=\"btn\" data=\""+i+"\"></div>").insertBefore($("#next"));
+				$("<div style=\""+ style +"\" class=\"btn "+slides.conf.controlClass+"\"  data=\""+i+"\"></div>").insertBefore("#next");
 			}
-
-			$("div#"+slides.conf.controlId+"").bind('click',function(){
-				slides.stopAnimation();
-				slides.control($(this).attr('data'));
-			});
-
+			
 			slides.init();
 			slides.startAnimation();
 		},
 
-		// 初始化添加上一个下一个按钮事件以
+		// 初始化添加按钮事件以
 		init : function() {
 			$( "#" + slides.conf.prevId ).click(function() {
 				slides.stopAnimation();
@@ -86,6 +84,14 @@
 				slides.stopAnimation();
 				slides.next();
 			});
+			$("." + slides.conf.controlClass).bind('click',function(){
+				slides.stopAnimation();
+				slides.control($(this).attr('data'));
+			});
+			$("." + slides.conf.controlClass).bind('mousemove',function(){
+					
+				$(this).css('backgrund-position','-55px -19px');
+			});	
 		},
 
 		// 上一张幻灯片
@@ -125,8 +131,8 @@
 			}
 			
 			// 当前图片指针位置高亮
-			$("#headernav #control").css('background', 'url(./icon.png) -55px -0px no-repeat');
-			$($("#headernav #control").get(slides.conf.currentImg)).css('background', 'url(./icon.png) -55px -19px no-repeat');
+			$("#headernav ." + slides.conf.controlClass).css('background', 'url(./icon.png) -55px -0px no-repeat');
+			$($("#headernav ." + slides.conf.controlClass).get(slides.conf.currentImg)).css('background', 'url(./icon.png) -55px -19px no-repeat');
 
 			// 切换图片
 			slides.showImage(slides.urls[slides.conf.currentImg], currentContainer, slides.conf.activeContainer);
@@ -179,5 +185,6 @@
 		}
 	}
 slides.start();
-
 </script>
+</body>
+</html>
