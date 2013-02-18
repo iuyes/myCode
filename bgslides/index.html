@@ -52,14 +52,19 @@
 			'interval'			: '', // setInterval产生的id
 			'htmlBgIdPrefix'	: 'headerimg', // 背景div的class
 			'controlId'			: 'control', // 控制器中间直接显示某个背景的div 的id
-			'prevId'			: '#prev', // 上一个按钮的id
-			'nextId'			: '#next', // 下一个按钮的id
+			'prevId'			: 'prev', // 上一个按钮的id
+			'nextId'			: 'next', // 下一个按钮的id
 		},
 
 		// 开始播放背景幻灯片
 		start : function() {
 			for(var i = 0;i<slides.urls.length;i++) {
-				$("<div id=\""+slides.conf.controlId+"\" class=\"btn\" data=\""+i+"\"></div>").insertBefore($("#next"));
+				if(i == 0) {
+					var style = 'background:url(./icon.png) -55px -19px no-repeat;';
+				}else {
+					var style = '';
+				}
+				$("<div style=\""+ style +"\" id=\""+slides.conf.controlId+"\" class=\"btn\" data=\""+i+"\"></div>").insertBefore($("#next"));
 			}
 
 			$("div#"+slides.conf.controlId+"").bind('click',function(){
@@ -73,11 +78,11 @@
 
 		// 初始化添加上一个下一个按钮事件以
 		init : function() {
-			$(slides.conf.prevId).click(function() {
+			$( "#" + slides.conf.prevId ).click(function() {
 				slides.stopAnimation();
 				slides.prev();
 			});
-			$(slides.conf.nextId).click(function() {
+			$( "#" + slides.conf.nextId ).click(function() {
 				slides.stopAnimation();
 				slides.next();
 			});
@@ -118,6 +123,12 @@
 			} else {
 				slides.conf.activeContainer = 1;
 			}
+			
+			// 显示当前图片的位置
+			$("#headernav #control").css('background', 'url(./icon.png) -55px -0px no-repeat');
+			$($("#headernav #control").get(slides.conf.currentImg)).css('background', 'url(./icon.png) -55px -19px no-repeat');
+
+			// 切换图片
 			slides.showImage(slides.urls[slides.conf.currentImg], currentContainer, slides.conf.activeContainer);
 		
 		},
@@ -148,7 +159,7 @@
 				current = total-1;
 			}
 			
-			return current;			
+			return current;		
 		},
 
 		// 停止动画
