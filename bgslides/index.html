@@ -47,27 +47,35 @@
 		// 默认配置
 		conf : {
 			'animating'			: false, // 动画是否在运行
-			'currentImg'		: 0, // 当前图片id
 			'direction'			: 'next', // 图片播放顺序
 			'currentZindex'		: -1, // 当前图片的z-index
 			'activeContainer'	: 1, // 需要显示的div
-			'slideshowSpeed'	: 6000, // 播放速度
-			'interval'			: '', // setInterval产生的id
-			'htmlBgIdPrefix'	: 'headerimg', // 背景div的class
-			'controlClass'			: 'control', // 控制器中间直接显示某个背景的div 的class
-			'prevId'			: 'prev', // 上一个按钮的id
-			'nextId'			: 'next' // 下一个按钮的id
+			'slideshowSpeed'	: 6000 // 播放速度
 		},
 
 		// 开始播放背景幻灯片
-		start : function() {
+		start : function(opts) {
+			// 同步配置		
+			$.extend( slides.conf , opts );
+			
+			// 由于下面这些都是固定的不能让用户自己修改所以放在这里
+			slides.conf.htmlBgIdPrefix	= 'headerimg'; // 背景div的class
+			slides.conf.interval		= ''; // setInterval产生的id
+			slides.conf.currentImg		= 0; // 当前图片id
+			slides.conf.controlClass	= 'control'; // 控制器中间直接显示某个背景的div 的class
+			slides.conf.prevId			= 'prev'; // 上一个按钮的id
+			slides.conf.nextId			= 'next'; // 下一个按钮的id
+			
+			// 生成图片指针
 			for(var i = 0;i<slides.urls.length;i++) {
 				if(i == 0) {
 					var style = 'background:url(./icon.png) -55px -19px no-repeat;';
 				}else {
 					var style = '';
 				}
-				$("<div style=\""+ style +"\" class=\"btn "+slides.conf.controlClass+"\"  data=\""+i+"\"></div>").insertBefore("#next");
+				//$('<div>' , {class:'btn ' + slides.conf.controlClass , data_a:i , style:style}).insertBefore( "#" + slides.conf.nextId ); // 此处由于class是保留字  所以会报错 所以还是用下面的方式
+				
+				$("<div style=\""+ style +"\" class=\"btn "+slides.conf.controlClass+"\"  data_a=\""+i+"\"></div>").insertBefore("#next");
 			}
 			
 			slides.init();
@@ -86,7 +94,7 @@
 			});
 			$("." + slides.conf.controlClass).bind('click',function(){
 				slides.stopAnimation();
-				slides.control($(this).attr('data'));
+				slides.control($(this).attr('data_a'));
 			});
 			$("." + slides.conf.controlClass).bind('mousemove',function(){
 					
@@ -184,7 +192,7 @@
 				   
 		}
 	}
-slides.start();
+slides.start({prevId:'aaa'});
 </script>
 </body>
 </html>
