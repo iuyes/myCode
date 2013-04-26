@@ -69,7 +69,29 @@ class Curl {
 		curl_close($curl);
 		return $result;
 	}
-
+	/**
+	 * curl 下载远程文件保存到本地
+	 * @param string remote 远程地址
+	 * @param string local 本地保存地址
+	 * @param string cookie cookie位置由于某些网站有访
+	 * 问限制例如路透社你会发现如果你没有cookie是无法获
+	 * 取该网站上的内容，所以要先模拟登陆获取cookie，
+	 * 再带着cookie去请求远程地址
+	 * @return void
+	 * @author andy
+	 */
+	public function curlDownload( $remote, $local, $cookie = '' ) {
+		$cp = curl_init($remote);
+		$fp = fopen($local,"w");
+		curl_setopt($cp, CURLOPT_FILE, $fp);
+		curl_setopt($cp, CURLOPT_HEADER, 0);
+		if($cookie != ''){
+			curl_setopt($cp, CURLOPT_COOKIEFILE, $cookie);
+		}
+		curl_exec($cp);
+		curl_close($cp);
+		fclose($fp);
+	}
 
 
 }
